@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
+// import {logout} from "../api/auth.js";
 import { Menu, X } from "lucide-react";
 import Logo from "../assets/logo.png";
 
 function Navbar() {
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+
+    const role = localStorage.getItem("role");
+
+
 
     const navItems = [
         { label: "Home", path: "/" },

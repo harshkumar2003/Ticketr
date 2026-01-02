@@ -3,6 +3,7 @@ import {Mail,LockKeyhole} from "lucide-react"
 import {Link} from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {login} from "../api/auth.js";
 
 function Login() {
     const API = import.meta.env.VITE_API_URL;
@@ -24,9 +25,15 @@ function Login() {
         e.preventDefault();
         try
         {
-            const res = await axios.post(`${API}/auth/login`, formData);
-            localStorage.setItem("token",res.data.token);
-            localStorage.setItem("role",res.data.role);
+            // const res = await axios.post(`${API}/auth/login`, formData);
+            // localStorage.setItem("token",res.data.token);
+            // localStorage.setItem("role",res.data.role);
+            // setFormData({email: "",password: "",});
+            // navigate("/dashboard")
+            const email = formData.email;
+            const password = formData.password;
+            const res = await login(email,password);
+            localStorage.setItem("role", res.data.role);
             setFormData({email: "",password: "",});
             navigate("/dashboard")
         }

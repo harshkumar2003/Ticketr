@@ -3,10 +3,13 @@ package com.app.ticketr_backend.controller;
 
 import com.app.ticketr_backend.dto.request.CreateTicketRequest;
 import com.app.ticketr_backend.dto.response.TicketResponse;
-import com.app.ticketr_backend.model.Ticket;
+import com.app.ticketr_backend.model.TicketPriority;
+import com.app.ticketr_backend.model.TicketStatus;
 import com.app.ticketr_backend.service.TicketService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/tickets")
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173",
+        allowCredentials = "true"
+)
 public class TicketController
 {
     private final TicketService ticketService;
@@ -22,6 +27,7 @@ public class TicketController
     {
         this.ticketService = ticketService;
     }
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/create")
     public ResponseEntity<TicketResponse> createTicket(@RequestBody @Valid CreateTicketRequest request, Authentication authentication)
     {
@@ -32,36 +38,44 @@ public class TicketController
         return ResponseEntity.ok(ticket);
     }
 
-    @GetMapping("/mytickets")
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/my")
     public ResponseEntity<List<TicketResponse>> getMyTickets( Authentication authentication)
     {
         String email = authentication.getName();
         return ResponseEntity.ok(ticketService.getMyTickets(email));
 
     }
-
-    @GetMapping("/alltickets")
-    public ResponseEntity<List<TicketResponse>> getAlltickets(Authentication authentication)
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping()
+    public ResponseEntity<Page<TicketResponse>> getAllTickets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) TicketStatus status,
+            @RequestParam(required = false)TicketPriority priority)
     {
-        String role = authentication.getAuthorities()
-                .iterator()
-                .next()
-                .getAuthority()
-                .replace("ROLE_","");
-        return ResponseEntity.ok(ticketService.getAllTickets(role));
+//        String role = authentication.getAuthorities()
+//                .iterator()
+//                .next()
+//                .getAuthority()
+//                .replace("ROLE_","");
+        return ResponseEntity.ok(ticketService.getAllTickets(page,size,status,priority));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{ticketId}/assign/{userId}")
-    public ResponseEntity<TicketResponse> assignTicket(@PathVariable Long ticketId , @PathVariable int userId , Authentication authentication)
+    public ResponseEntity<TicketResponse> assignTicket(@PathVariable Long ticketId , @PathVariable int userId)
     {
-        String role = authentication.getAuthorities()
-                .iterator()
-                .next()
-                .getAuthority()
-                .replace("ROLE_","");
-        return ResponseEntity.ok(ticketService.assignTicket(ticketId,userId,role));
+//        String role = authentication.getAuthorities()
+//                .iterator()
+//                .next()
+//                .getAuthority()
+//                .replace("ROLE_","");
+        return ResponseEntity.ok(ticketService.assignTicket(ticketId,userId));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/{ticketId}/resolve")
     public ResponseEntity<TicketResponse> resolveTicket(@PathVariable Long ticketId,Authentication authentication)
     {
@@ -69,15 +83,17 @@ public class TicketController
         return ResponseEntity.ok(ticketService.resolveTicket(ticketId,email));
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{ticketId}/close")
-    public ResponseEntity<TicketResponse> closeTicket(@PathVariable Long ticketId , Authentication authentication)
+    public ResponseEntity<TicketResponse> closeTicket(@PathVariable Long ticketId)
     {
-        String role = authentication.getAuthorities()
-                .iterator()
-                .next()
-                .getAuthority()
-                .replace("ROLE_","");
-        return ResponseEntity.ok(ticketService.closeTicket(ticketId,role));
+//        String role = authentication.getAuthorities()
+//                .iterator()
+//                .next()
+//                .getAuthority()
+//                .replace("ROLE_","");
+        return ResponseEntity.ok(ticketService.closeTicket(ticketId));
 
     }
 

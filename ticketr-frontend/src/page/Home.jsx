@@ -6,7 +6,7 @@ function Home()
 {
     return(
         <>
-            <Navbar/>
+            {/*<Navbar/>*/}
             <div className="z-0">
                 <Hero/>
             </div>

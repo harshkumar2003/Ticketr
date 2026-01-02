@@ -10,6 +10,10 @@ import com.app.ticketr_backend.model.TicketStatus;
 import com.app.ticketr_backend.model.User;
 import com.app.ticketr_backend.repository.Ticketrepo;
 import com.app.ticketr_backend.repository.Userrepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +30,7 @@ public class TicketService
         this.userrepo = userrepo;
     }
 
-    private TicketResponse mapToResposne(Ticket ticket)
+    private TicketResponse mapToResponse(Ticket ticket)
     {
         return new TicketResponse(
                 ticket.getId(),
@@ -40,6 +44,8 @@ public class TicketService
                 ticket.getUpdatedAt()
         );
     }
+
+
 
 //     User Create the Ticket
     public TicketResponse createTicket(String title , String description ,
@@ -58,7 +64,7 @@ public class TicketService
 
         Ticket savedticket = ticketrepo.save(ticket);
 
-        return mapToResposne(savedticket);
+        return mapToResponse(savedticket);
     }
 
 //    USER views their OWN Tickets
@@ -70,39 +76,54 @@ public class TicketService
 
         return ticketrepo.findByCreatedBy(user)
                 .stream()
-                .map(this::mapToResposne)
+                .map(this::mapToResponse)
                 .toList();
 
     }
 
 //    ADMIN views All the ticket
 
-    public List<TicketResponse> getAllTickets(String currentUserRole)
+    public Page<TicketResponse> getAllTickets(int page , int size , TicketStatus status , TicketPriority priority)
     {
-        if(!currentUserRole.equals("ADMIN"))
+        Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
+        Page<Ticket> ticketpage;
+        if(status!=null&&priority!=null)
         {
-            throw new AccessDeniedException("Access Denied");
+            ticketpage = ticketrepo.findByStatusAndPriority(status,priority,pageable);
+        }
+        else if(status!=null)
+        {
+            ticketpage = ticketrepo.findByStatus(status,pageable);
+        }
+        else if(priority!=null)
+        {
+            ticketpage = ticketrepo.findByPriority(priority,pageable);
+        }
+        else
+        {
+            ticketpage = ticketrepo.findAll(pageable);
         }
 
-        return ticketrepo.findAll()
-                .stream()
-                .map(this::mapToResposne)
-                .toList();
+
+
+        return ticketpage.map(this::mapToResponse);
 
     }
 
 //    Admin Assign A ticket
 
     public TicketResponse assignTicket(Long ticketId,
-                               int userId,
-                               String currentUserRole)
+                               int userId)
     {
-        if(!currentUserRole.equals("ADMIN"))
-        {
-            throw new RuntimeException("ACCESS DENIED");
-        }
+//        if(!currentUserRole.equals("ADMIN"))
+//        {
+//            throw new RuntimeException("ACCESS DENIED");
+//        }
         Ticket ticket = ticketrepo.findById(ticketId)
                 .orElseThrow(()-> new ResourceNotFoundException("Ticket not found"));
+        if (ticket.getStatus() != TicketStatus.OPEN) {
+            throw new InvalidOperationException("Only OPEN tickets can be assigned");
+        }
         User assignee = userrepo.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("User Not Found"));
 
@@ -110,7 +131,7 @@ public class TicketService
         ticket.setStatus(TicketStatus.IN_PROGRESS);
 
         Ticket savedticket = ticketrepo.save(ticket);
-        return mapToResposne(savedticket);
+        return mapToResponse(savedticket);
 
     }
 //    USER marks ticket as RESOLVED
@@ -131,16 +152,16 @@ public class TicketService
         ticket.setStatus(TicketStatus.RESOLVED);
 
         Ticket savedTicket = ticketrepo.save(ticket);
-        return mapToResposne(savedTicket);
+        return mapToResponse(savedTicket);
     }
 
 //    ADMIN closes ticket
 
-    public TicketResponse closeTicket(Long ticketId ,String currentUserRole)
+    public TicketResponse closeTicket(Long ticketId)
     {
-        if (!currentUserRole.equals("ADMIN")) {
-            throw new RuntimeException("Only admin can close tickets");
-        }
+//        if (!currentUserRole.equals("ADMIN")) {
+//            throw new RuntimeException("Only admin can close tickets");
+//        }
 
         Ticket ticket = ticketrepo.findById(ticketId)
                 .orElseThrow(()-> new RuntimeException("Ticket Not Found"));
@@ -152,7 +173,7 @@ public class TicketService
         ticket.setStatus(TicketStatus.CLOSED);
 
         Ticket savedTicket = ticketrepo.save(ticket);
-        return mapToResposne(savedTicket);
+        return mapToResponse(savedTicket);
     }
 
 

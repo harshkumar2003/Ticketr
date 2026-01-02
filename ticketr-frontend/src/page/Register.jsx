@@ -3,6 +3,7 @@ import {LockKeyhole, Mail} from "lucide-react";
 import {Link} from "react-router-dom";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {register} from "../api/auth.js";
 
 function Register()
 {
@@ -25,7 +26,7 @@ function Register()
 
         try
         {
-            const res = await axios.post(`${API}/auth/register`, formData)
+            const res = await register(formData.name,formData.email,formData.password);
             console.log(res);
             setFormData({name:"",email:"",password:""})
             navigate("/login")
