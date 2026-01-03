@@ -15,3 +15,23 @@ export const myTicket = () => {
     withCredentials: true,
   });
 };
+
+export const allTickets = () => {
+  return api.get("/tickets", {
+    withCredentials: true,
+  });
+};
+
+export const assignTicket = (ticketId, userId) => {
+  return api.put(
+    `/tickets/${ticketId}/assign/${userId}`,
+    {},
+    { withCredentials: true },
+  );
+};
+
+export const markTicketResolved = (ticketId) => {
+  return api.put(`/tickets/${ticketId}/resolve`, null, {
+    withCredentials: true,
+  });
+};

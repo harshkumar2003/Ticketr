@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { myTicket } from "../api/ticket.js";
+import { myTicket, markTicketResolved } from "../api/ticket.js";
+
+import MarkTicketModal from "../component/MarkTicketModal";
 
 function MyTickets() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -18,6 +21,20 @@ function MyTickets() {
     };
     fetchTickets();
   }, []);
+
+  const handleResolve = async () => {
+    try {
+      await markTicketResolved(selectedTicket.id);
+      setTickets((prev) =>
+        prev.map((t) =>
+          t.id === selectedTicket.id ? { ...t, status: "RESOLVED" } : t,
+        ),
+      );
+      setSelectedTicket(null);
+    } catch (err) {
+      console.log("Resolve failed", err);
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -36,23 +53,21 @@ function MyTickets() {
         </div>
       )}
 
-      {/* Empty State */}
+      {/* Empty */}
       {!loading && tickets.length === 0 && (
         <div className="border border-white/10 rounded-xl p-12 text-center text-white/60">
           No tickets yet.
-          <br />
-          When a problem arises, this is where it will rest.
         </div>
       )}
 
-      {/* Ticket List */}
+      {/* Tickets */}
       {!loading && tickets.length > 0 && (
         <div className="space-y-4">
           {tickets.map((ticket) => (
             <div
               key={ticket.id}
-              className="bg-black border border-white/10 rounded-xl p-5
-                         hover:border-orange-500/50 transition"
+              onClick={() => setSelectedTicket(ticket)}
+              className="cursor-pointer bg-black border border-white/10 rounded-xl p-5 hover:border-orange-500/50 transition"
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -60,10 +75,6 @@ function MyTickets() {
                     {ticket.title}
                   </h3>
                   <p className="text-sm text-white/50 mt-1">
-                    Created on {ticket.description}
-                  </p>
-                  <p className="text-sm text-white/50 mt-1">
-                    Created on{" "}
                     {new Date(ticket.createdAt).toLocaleString(undefined, {
                       dateStyle: "medium",
                       timeStyle: "short",
@@ -72,28 +83,22 @@ function MyTickets() {
                 </div>
 
                 <div className="text-right space-y-1">
-                  <span
-                    className={`text-xs px-3 py-1 rounded-full font-medium
-                      ${
-                        ticket.priority === "HIGH"
-                          ? "bg-red-500/20 text-red-400"
-                          : ticket.priority === "MEDIUM"
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : "bg-green-500/20 text-green-400"
-                      }`}
-                  >
-                    {ticket.priority}
-                  </span>
-
-                  <div className="text-xs text-white/60">
+                  <span className="text-xs px-3 py-1 rounded-full bg-blue-500/20 text-blue-400">
                     {ticket.status.replace("_", " ")}
-                  </div>
+                  </span>
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* Modal */}
+      <MarkTicketModal
+        ticket={selectedTicket}
+        onClose={() => setSelectedTicket(null)}
+        onConfirm={handleResolve}
+      />
     </div>
   );
 }
