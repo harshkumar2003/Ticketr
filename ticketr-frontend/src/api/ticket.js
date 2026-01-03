@@ -35,3 +35,9 @@ export const markTicketResolved = (ticketId) => {
     withCredentials: true,
   });
 };
+
+export const markclose = (ticketId) => {
+  return api.put(`/tickets/${ticketId}/close`, null, {
+    withCredentials: true,
+  });
+};
