@@ -11,18 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. Setup Java 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build & SonarQube Scan (Backend)
+      # 3. Cache Maven dependencies (faster builds)
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      # 4. Build & SonarQube Scan (BACKEND ONLY)
+      - name: Build & SonarQube Scan
         working-directory: ticketr-backend
-        run: mvn clean verify sonar:sonar
+        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
