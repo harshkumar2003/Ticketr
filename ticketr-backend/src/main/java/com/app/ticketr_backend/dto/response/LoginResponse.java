@@ -13,6 +13,7 @@ public class LoginResponse
     }
 
     private String role;
+    public LoginResponse(){}
     public LoginResponse(String token, String role) {
         this.token = token;
         this.role = role;

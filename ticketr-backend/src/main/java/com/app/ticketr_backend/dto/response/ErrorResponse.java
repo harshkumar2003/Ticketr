@@ -6,6 +6,7 @@ public class ErrorResponse
 {
     private int status;
 
+    public ErrorResponse(){}
     public ErrorResponse(int status, String message) {
         this.status = status;
         this.message = message;

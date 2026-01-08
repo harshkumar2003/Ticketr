@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Ticketr.iml" filepath="$PROJECT_DIR$/.idea/Ticketr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ticketr-backend/ticketr-backend.iml" filepath="$PROJECT_DIR$/ticketr-backend/ticketr-backend.iml" />
     </modules>
   </component>
 </project>

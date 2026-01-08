@@ -4,6 +4,7 @@ public class UserResponse
 {
     private int id;
 
+    public UserResponse(){}
     public UserResponse(int id, String email, String name) {
         this.id = id;
         this.email = email;

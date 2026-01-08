@@ -33,14 +33,20 @@ public class SecurityConfig
     {
         http
                 .cors(cors -> {})
-                .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("api/auth/logout").permitAll()
+                        .requestMatchers("/api/auth/logout").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/actuator/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
@@ -68,13 +74,20 @@ public class SecurityConfig
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://ticketrapp.vercel.app/"); // prod: your domain
+        config.addAllowedOrigin("https://ticketrapp.vercel.app");
+        config.addAllowedOrigin("http://localhost:5173");// prod: your domain
+        config.addAllowedOrigin("http://localhost:8080");
+
+//        config.addAllowedOrigin("https://ticketrapp.vercel.app/"); // prod: your domain
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/v3/api-docs/**", config);
+        source.registerCorsConfiguration("/swagger-ui/**", config);
+
         return source;
     }
 

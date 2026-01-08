@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class CreateTicketRequest
 {
+    public CreateTicketRequest(){}
     public String getTitle() {
         return title;
     }
