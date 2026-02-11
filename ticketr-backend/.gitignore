@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 sonar-project.properties
+.env
+.env.*
+!.env.example
