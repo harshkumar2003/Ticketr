@@ -74,8 +74,7 @@ public class SecurityConfig
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("https://ticketrapp.vercel.app");
-        config.addAllowedOrigin("http://localhost:5173");// prod: your domain
-        config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOrigin("https://ticketr.devfostertech.me/");// prod: your domain
 
 //        config.addAllowedOrigin("https://ticketrapp.vercel.app/"); // prod: your domain
         config.addAllowedHeader("*");
