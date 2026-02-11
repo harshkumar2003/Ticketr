@@ -47,6 +47,14 @@ public class TicketController
         return ResponseEntity.ok(ticketService.getMyTickets(email));
 
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/assigned")
+    public ResponseEntity<List<TicketResponse>> getAssignedTickets(Authentication authentication)
+    {
+        String email = authentication.getName();
+        return ResponseEntity.ok(ticketService.getAssignedTickets(email));
+    }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<Page<TicketResponse>> getAllTickets(
@@ -55,11 +63,6 @@ public class TicketController
             @RequestParam(required = false) TicketStatus status,
             @RequestParam(required = false)TicketPriority priority)
     {
-//        String role = authentication.getAuthorities()
-//                .iterator()
-//                .next()
-//                .getAuthority()
-//                .replace("ROLE_","");
         return ResponseEntity.ok(ticketService.getAllTickets(page,size,status,priority));
     }
 
@@ -67,11 +70,6 @@ public class TicketController
     @PutMapping("/{ticketId}/assign/{userId}")
     public ResponseEntity<TicketResponse> assignTicket(@PathVariable Long ticketId , @PathVariable int userId)
     {
-//        String role = authentication.getAuthorities()
-//                .iterator()
-//                .next()
-//                .getAuthority()
-//                .replace("ROLE_","");
         return ResponseEntity.ok(ticketService.assignTicket(ticketId,userId));
     }
 
@@ -88,11 +86,6 @@ public class TicketController
     @PutMapping("/{ticketId}/close")
     public ResponseEntity<TicketResponse> closeTicket(@PathVariable Long ticketId)
     {
-//        String role = authentication.getAuthorities()
-//                .iterator()
-//                .next()
-//                .getAuthority()
-//                .replace("ROLE_","");
         return ResponseEntity.ok(ticketService.closeTicket(ticketId));
 
     }

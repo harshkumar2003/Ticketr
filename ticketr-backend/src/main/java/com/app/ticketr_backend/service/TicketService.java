@@ -81,6 +81,18 @@ public class TicketService
 
     }
 
+//    USER views tickets assigned to them
+    public List<TicketResponse> getAssignedTickets(String currentUserEmail)
+    {
+        User user = userrepo.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
+
+        return ticketrepo.findByAssignedTo(user)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
 //    ADMIN views All the ticket
 
     public Page<TicketResponse> getAllTickets(int page , int size , TicketStatus status , TicketPriority priority)
@@ -115,10 +127,6 @@ public class TicketService
     public TicketResponse assignTicket(Long ticketId,
                                int userId)
     {
-//        if(!currentUserRole.equals("ADMIN"))
-//        {
-//            throw new RuntimeException("ACCESS DENIED");
-//        }
         Ticket ticket = ticketrepo.findById(ticketId)
                 .orElseThrow(()-> new ResourceNotFoundException("Ticket not found"));
         if (ticket.getStatus() != TicketStatus.OPEN) {
@@ -140,14 +148,19 @@ public class TicketService
         Ticket ticket = ticketrepo.findById(ticketId)
                 .orElseThrow(()->new ResourceNotFoundException("Ticket Not Found"));
 
-        if(!ticket.getCreatedBy().getEmail().equals(currentUserEmail))
+        if(ticket.getAssignedTo() == null)
         {
-            throw  new InvalidOperationException("You can only resolve your own ticket");
+            throw new InvalidOperationException("Ticket is not assigned to any user");
+        }
+
+        if(!ticket.getAssignedTo().getEmail().equals(currentUserEmail))
+        {
+            throw  new InvalidOperationException("Only the assigned user can resolve this ticket");
         }
 
         if(ticket.getStatus()!=TicketStatus.IN_PROGRESS)
         {
-            throw new RuntimeException("Ticket must be IN_PROGRESS to resolve");
+            throw new IllegalArgumentException("Ticket must be IN_PROGRESS to resolve");
         }
         ticket.setStatus(TicketStatus.RESOLVED);
 
@@ -159,16 +172,13 @@ public class TicketService
 
     public TicketResponse closeTicket(Long ticketId)
     {
-//        if (!currentUserRole.equals("ADMIN")) {
-//            throw new RuntimeException("Only admin can close tickets");
-//        }
 
         Ticket ticket = ticketrepo.findById(ticketId)
                 .orElseThrow(()-> new RuntimeException("Ticket Not Found"));
 
         if(ticket.getStatus()!=TicketStatus.RESOLVED)
         {
-            throw new RuntimeException("Only resolved tickets can be closed");
+            throw new IllegalArgumentException("Only resolved tickets can be closed");
         }
         ticket.setStatus(TicketStatus.CLOSED);
 

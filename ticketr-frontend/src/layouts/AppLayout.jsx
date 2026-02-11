@@ -12,28 +12,32 @@ const AppLayout = () => {
     useEffect(() => {
         if (user === null) {
             getMe()
-                .then(res => {
-                    console.log("ME RESPONSE:", res.data);
+                .then((res) => {
                     setUser(res.data);
                 })
-                .catch(err => {
-                    console.log("ME ERROR:", err.response?.status);
+                .catch(() => {
                     setUser(false);
                     navigate("/login");
                 });
         }
-    }, [user]);
+    }, [navigate, setUser, user]);
 
     if (user === null) {
-        return <div>Loading...</div>;
+        return (
+            <div className="min-h-screen grid place-items-center bg-black text-white">
+                <div className="rounded-xl border border-white/10 bg-zinc-950 px-5 py-3 text-sm text-white/70">
+                    Loading workspace...
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col">
             <TopNavbar />
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
                 <Sidebar />
-                <main className="flex-1 p-6 overflow-y-auto ">
+                <main className="h-full flex-1 overflow-y-auto p-4 sm:p-6">
                     <Outlet />
                 </main>
             </div>

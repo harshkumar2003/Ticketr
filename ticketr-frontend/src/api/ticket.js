@@ -22,6 +22,12 @@ export const allTickets = () => {
   });
 };
 
+export const assignedTickets = () => {
+  return api.get("/tickets/assigned", {
+    withCredentials: true,
+  });
+};
+
 export const assignTicket = (ticketId, userId) => {
   return api.put(
     `/tickets/${ticketId}/assign/${userId}`,

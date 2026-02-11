@@ -1,9 +1,9 @@
 package com.app.ticketr_backend.service;
 
 import com.app.ticketr_backend.dto.response.UserResponse;
-import com.app.ticketr_backend.model.User;
 import com.app.ticketr_backend.repository.Userrepo;
 import org.springframework.stereotype.Service;
+import com.app.ticketr_backend.model.User;
 
 import java.util.List;
 

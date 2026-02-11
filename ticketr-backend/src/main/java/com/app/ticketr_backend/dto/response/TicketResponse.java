@@ -48,7 +48,10 @@ public class TicketResponse
     private String title;
 
     public TicketResponse() {}
-    public TicketResponse(Long id, String title, String description, TicketStatus status, TicketPriority priority, String createdBy, String assignedTo, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public TicketResponse(Long id, String title, String description, TicketStatus status,
+                          TicketPriority priority, String createdBy,
+                          String assignedTo, LocalDateTime createdAt,
+                          LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;

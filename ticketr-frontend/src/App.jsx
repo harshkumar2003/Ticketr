@@ -2,7 +2,7 @@ import React from "react";
 import Home from "./page/Home.jsx";
 import Login from "./page/Login.jsx";
 import Register from "./page/Register.jsx";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./page/Dashboard.jsx";
 import Settings from "./page/Settings.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
@@ -14,6 +14,8 @@ import AppLayout from "./layouts/AppLayout.jsx";
 import ResolveTicket from "./page/ResolveTicket.jsx";
 import AssignTicket from "./page/AssignTicket.jsx";
 import CloseTicket from "./page/CloseTicket.jsx";
+import Unauthorized from "./page/Unauthorized.jsx";
+import AllUsers from "./page/AllUsers.jsx";
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
       </Route>
 
       {/* APP LAYOUT (loads user) */}
@@ -35,7 +38,7 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           }
-        />{" "}
+        />
         <Route
           path="/settings"
           element={
@@ -94,7 +97,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <AllUsers />
+            </ProtectedRoute>
+          }
+        />
       </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

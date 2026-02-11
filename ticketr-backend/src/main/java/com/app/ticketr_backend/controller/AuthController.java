@@ -41,8 +41,8 @@ public class AuthController
         LoginResponse loginresponse = authService.login(loginRequest);
 
         Cookie cookie = new Cookie("access_token" , loginresponse.getToken());
-        cookie.setHttpOnly(false);
-        cookie.setSecure(false);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60*60*60);
         cookie.setAttribute("SameSite" , "Strict");
@@ -69,7 +69,7 @@ public class AuthController
     {
         Cookie cookie = new Cookie("access_token",null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
 
