@@ -107,12 +107,7 @@ Business rules enforced in backend service layer:
 
 ## Screenshots (SS)
 
-Current assets in repo include logo only. Add product screenshots under a folder like `docs/ss/` and link them below.
-
-Example section you can keep/update:
-
-```md
-## Screenshots (SS)
+Current assets in repo include logo only. Add product screenshots under `docs/ss/` and use these links:
 
 ### Home
 ![Home](docs/ss/home.png)
@@ -128,7 +123,6 @@ Example section you can keep/update:
 
 ### Assign Ticket
 ![Assign Ticket](docs/ss/assign-ticket.png)
-```
 
 ## Getting Started
 
