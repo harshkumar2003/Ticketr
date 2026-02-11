@@ -38,8 +38,7 @@ public class SecurityConfig
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/auth/logout").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout").permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -74,7 +73,9 @@ public class SecurityConfig
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("https://ticketrapp.vercel.app");
-        config.addAllowedOrigin("https://ticketr.devfostertech.me/");// prod: your domain
+        config.addAllowedOrigin("https://ticketr.devfostertech.me");// prod: your domain
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOriginPattern("https://*.onrender.com");
 
 //        config.addAllowedOrigin("https://ticketrapp.vercel.app/"); // prod: your domain
         config.addAllowedHeader("*");

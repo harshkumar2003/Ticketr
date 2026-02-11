@@ -4,22 +4,17 @@ import com.app.ticketr_backend.dto.request.LoginRequest;
 import com.app.ticketr_backend.dto.request.RegisterRequest;
 import com.app.ticketr_backend.dto.response.LoginResponse;
 import com.app.ticketr_backend.dto.response.UserMeResponse;
-import com.app.ticketr_backend.model.User;
 import com.app.ticketr_backend.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173",
-        allowCredentials = "true"
-)
 public class AuthController
 {
     private final AuthService authService;
@@ -45,7 +40,7 @@ public class AuthController
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(60*60*60);
-        cookie.setAttribute("SameSite" , "Strict");
+        cookie.setAttribute("SameSite" , "None");
         response.addCookie(cookie);
         return ResponseEntity.ok(new LoginResponse(null,loginresponse.getRole()));
     }
@@ -53,6 +48,11 @@ public class AuthController
     @GetMapping("/me")
     public ResponseEntity<UserMeResponse> me(Authentication authentication)
     {
+        if(authentication == null || !authentication.isAuthenticated())
+        {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         String email = authentication.getName();
         String role = authentication.getAuthorities()
                 .iterator()
@@ -72,6 +72,7 @@ public class AuthController
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite","None");
 
         response.addCookie(cookie);
 
